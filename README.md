@@ -39,37 +39,7 @@ Diseñado con un enfoque de ingeniería moderno, alto rendimiento y una estétic
 
 ---
 
-## 💻 Ejecución en Local
 
-Clonar el repositorio e instalar dependencias:
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/copito111/camilo-andres-tamayo-portafolio.git
-
-# 2. Entrar a la carpeta
-cd camilo-andres-tamayo-portafolio
-
-# 3. Instalar dependencias
-npm install
-
-# 4. Iniciar servidor de desarrollo
-npm run dev
-```
-
-Abre [http://localhost:3000](http://localhost:3000) en el navegador para ver el resultado.
-
----
-
-## ☁️ Despliegue en Vercel
-
-Este proyecto está 100% optimizado y listo para desplegar en **Vercel**:
-
-1. Sube este repositorio a tu cuenta de GitHub (`copito111`).
-2. Ve a [vercel.com](https://vercel.com) e inicia sesión con tu cuenta de GitHub.
-3. Haz clic en **"Add New Project"** e importa el repositorio `camilo-andres-tamayo-portafolio`.
-4. Vercel detectará automáticamente el framework **Next.js**.
-5. Haz clic en **"Deploy"**. En segundos tu portafolio estará en vivo con certificado SSL gratuito y CDN global.
 
 ---
 
