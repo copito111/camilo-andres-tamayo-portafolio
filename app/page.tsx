@@ -1,6 +1,69 @@
+"use client";
+
+import React, { useState, useRef } from "react";
+
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
+// Custom 3D Tilt Wrapper Component
+function TiltCard({
+  children,
+  className = "",
+  maxTilt = 12,
+  scale = 1.02,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  maxTilt?: number;
+  scale?: number;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transformStyle, setTransformStyle] = useState("");
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = -((y - centerY) / centerY) * maxTilt;
+    const rotateY = ((x - centerX) / centerX) * maxTilt;
+
+    setTransformStyle(
+      `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(${scale}, ${scale}, ${scale})`
+    );
+  };
+
+  const handleMouseLeave = () => {
+    setTransformStyle("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className={`tilt-card ${className}`}
+      style={{ transform: transformStyle }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Home() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText("ctamayo959@gmail.com").then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
   return (
     <main>
       <nav className="site-nav" aria-label="Navegación principal">
@@ -17,14 +80,17 @@ export default function Home() {
         <a className="nav-cta" href="#contacto">Hablemos <Arrow /></a>
       </nav>
 
+      {/* HERO SECTION */}
       <section className="hero" id="inicio">
         <div className="hero-grid" aria-hidden="true" />
         
+        {/* 3D PORTRAIT WITH CONCENTRIC ORBIT */}
         <div className="hero-portrait-stage">
           <div className="hero-orbit" aria-hidden="true">
             <span className="orbit-dot" />
           </div>
-          <div className="hero-portrait-card">
+
+          <TiltCard className="hero-portrait-card" maxTilt={15} scale={1.03}>
             <div className="hero-img-wrap">
               <img 
                 src="/camilo-tamayo.jpg" 
@@ -35,12 +101,12 @@ export default function Home() {
             <div className="hero-card-meta">
               <div className="hero-card-name">
                 <span>Camilo A. Tamayo</span>
-                <span className="status-dot" />
+                <span className="status-dot" title="Disponible para desarrollo" />
               </div>
               <span className="hero-card-tag">Tecnólogo ADSO · SENA</span>
               <span className="hero-card-sub">📍 Neiva, Huila · Colombia</span>
             </div>
-          </div>
+          </TiltCard>
         </div>
 
         <div className="hero-kicker">
@@ -69,6 +135,7 @@ export default function Home() {
         <div className="hero-index" aria-hidden="true">01 / 05</div>
       </section>
 
+      {/* PERFIL & ESTUDIOS SECTION */}
       <section className="profile-section" id="perfil">
         <div className="section-label"><span>01</span> Perfil & Estudios</div>
         <div className="profile-copy">
@@ -77,11 +144,11 @@ export default function Home() {
           <p className="lead">
             Actualmente adelanto el programa <strong>Tecnólogo en Análisis y Desarrollo de Software (ADSO)</strong> en el 
             <strong> Servicio Nacional de Aprendizaje (SENA)</strong> (Ficha 3407799). 
-            Mi enfoque une el rigor del ciclo de vida del software —análisis de requerimientos (SRS), 
+            Mi metodología une el rigor del ciclo de vida del software —análisis de requerimientos (SRS), 
             modelado relacional y arquitectura C4— con la construcción directa de soluciones funcionales y optimizadas.
           </p>
 
-          <div className="profile-credentials-card">
+          <TiltCard className="profile-credentials-card" maxTilt={6} scale={1.01}>
             <div className="credentials-avatar">
               <img src="/camilo-tamayo.jpg" alt="Camilo Andrés Tamayo" />
             </div>
@@ -100,7 +167,13 @@ export default function Home() {
                 </div>
                 <div>
                   <span className="cred-label">Correo Oficial</span>
-                  <a href="mailto:ctamayo959@gmail.com" className="cred-value link">ctamayo959@gmail.com</a>
+                  <button 
+                    onClick={handleCopyEmail}
+                    className="cred-value link text-left bg-transparent border-none p-0 cursor-pointer"
+                    title="Click para copiar correo"
+                  >
+                    {copied ? "¡Copiado con éxito! ✓" : "ctamayo959@gmail.com"}
+                  </button>
                 </div>
                 <div>
                   <span className="cred-label">GitHub</span>
@@ -112,7 +185,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </TiltCard>
 
           <div className="principles">
             <div>
@@ -131,6 +204,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PROYECTOS SECTION WITH 3D TILT */}
       <section className="projects-section" id="proyectos">
         <div className="section-intro">
           <div className="section-label light"><span>02</span> Proyectos</div>
@@ -141,8 +215,8 @@ export default function Home() {
         </div>
 
         <div className="projects-grid">
-          {/* Featured Project: MERCANEX ERP (Replaces TITAN) */}
-          <article className="project-card project-featured">
+          {/* Featured Project: MERCANEX ERP */}
+          <TiltCard className="project-card project-featured" maxTilt={8} scale={1.01}>
             <div className="project-topline">
               <span>01 / Proyecto Formativo Principal · SENA ADSO</span>
               <span className="project-status"><i /> Ficha 3407799 · En desarrollo activo</span>
@@ -150,6 +224,7 @@ export default function Home() {
 
             <div className="mercanex-visual" aria-hidden="true">
               <div className="mercanex-hud">
+                <div className="mercanex-scanline" />
                 <div className="mercanex-hud-header">
                   <span>MERCANEX // SISTEMA ERP CORPORATIVO</span>
                   <span>ONLINE · v2.4</span>
@@ -192,10 +267,10 @@ export default function Home() {
               <span>TypeScript</span>
               <span>APIs REST</span>
             </div>
-          </article>
+          </TiltCard>
 
           {/* Project 2: Cafe Web */}
-          <article className="project-card cafe-card">
+          <TiltCard className="project-card cafe-card" maxTilt={10} scale={1.02}>
             <div className="project-topline"><span>02 / Producto web</span><span>Full Stack</span></div>
             <div className="cafe-visual" aria-hidden="true">
               <span className="cup">Café<br />Web</span>
@@ -207,25 +282,25 @@ export default function Home() {
               <p>Una experiencia full stack pensada para conectar clientes, catálogo, pedidos y administración de ventas en una interfaz intuitiva.</p>
             </div>
             <div className="tags"><span>PHP</span><span>MySQL</span><span>Admin Panel</span><span>MVC</span></div>
-          </article>
+          </TiltCard>
 
           {/* Project 3: SQL Lab */}
-          <article className="project-card sql-card">
+          <TiltCard className="project-card sql-card" maxTilt={10} scale={1.02}>
             <div className="project-topline"><span>03 / Bases de Datos</span><span>Ingeniería</span></div>
             <div className="sql-visual" aria-hidden="true">
               <div><b>SELECT</b> student_name, competency</div>
               <div><b>FROM</b> sena_adso_records</div>
-              <div><b>WHERE</b> status = 'COMPLETED';</div>
+              <div><b>WHERE</b> status = &apos;COMPLETED&apos;;<span className="sql-cursor" /></div>
             </div>
             <div className="project-body">
               <h3>SQL & Data Modeling Lab</h3>
               <p>Diseño y normalización de bases de datos relacionales, modelos entidad–relación (E-R), integridad referencial y resolución de consultas analíticas avanzadas.</p>
             </div>
             <div className="tags"><span>MySQL</span><span>DBeaver</span><span>Modelado E-R</span><span>Optimización</span></div>
-          </article>
+          </TiltCard>
 
           {/* Project 4: Linux Workbench */}
-          <article className="project-card linux-card">
+          <TiltCard className="project-card linux-card" maxTilt={10} scale={1.02}>
             <div className="project-topline"><span>04 / Infraestructura</span><span>Sistemas</span></div>
             <div className="terminal-visual" aria-hidden="true">
               <div className="terminal-bar"><i /><i /><i /></div>
@@ -236,10 +311,11 @@ export default function Home() {
               <p>Administración y configuración de entornos en Linux (Ubuntu, Debian, Arch): gestión de paquetes, servidores de desarrollo, automatización y despliegue continuo.</p>
             </div>
             <div className="tags"><span>Linux</span><span>Bash</span><span>Git</span><span>Despliegue</span></div>
-          </article>
+          </TiltCard>
         </div>
       </section>
 
+      {/* SKILLS SECTION */}
       <section className="skills-section" id="habilidades">
         <div className="section-label"><span>03</span> Stack</div>
         <div className="skills-content">
@@ -270,6 +346,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* RECORRIDO / JOURNEY SECTION */}
       <section className="journey-section">
         <div className="section-label"><span>04</span> Recorrido</div>
         <div className="journey-content">
@@ -295,6 +372,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* CONTACT SECTION */}
       <section className="contact-section" id="contacto">
         <div className="contact-meta">
           <span className="status-dot dark" />
@@ -323,13 +401,24 @@ export default function Home() {
 
         <div className="contact-actions">
           <a href="mailto:ctamayo959@gmail.com">Escribir al Correo <Arrow /></a>
+          <button 
+            type="button" 
+            onClick={handleCopyEmail}
+            aria-label="Copiar correo electrónico al portapapeles"
+          >
+            {copied ? "¡Copiado con éxito! ✓" : "Copiar Correo"} <span>📋</span>
+          </button>
           <a href="https://github.com/copito111" target="_blank" rel="noopener noreferrer">Visitar GitHub @copito111 <Arrow /></a>
           <a href="#proyectos">Ver Proyectos <Arrow /></a>
         </div>
       </section>
 
+      {/* INFINITE MARQUEE TICKER */}
       <section className="preview-strip" aria-label="Áreas de enfoque">
-        <span>TECNÓLOGO ADSO</span><i>✦</i><span>DESARROLLO WEB FULL STACK</span><i>✦</i><span>BASES DE DATOS RELACIONALES</span><i>✦</i><span>ARQUITECTURA DE SOFTWARE</span><i>✦</i><span>LINUX</span>
+        <div className="marquee-track">
+          <span>TECNÓLOGO ADSO <i>✦</i> DESARROLLO WEB FULL STACK <i>✦</i> BASES DE DATOS RELACIONALES <i>✦</i> ARQUITECTURA DE SOFTWARE <i>✦</i> LINUX</span>
+          <span>TECNÓLOGO ADSO <i>✦</i> DESARROLLO WEB FULL STACK <i>✦</i> BASES DE DATOS RELACIONALES <i>✦</i> ARQUITECTURA DE SOFTWARE <i>✦</i> LINUX</span>
+        </div>
       </section>
 
       <footer className="first-footer">
